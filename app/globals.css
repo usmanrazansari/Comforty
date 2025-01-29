@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 75, 85, 99;  /* gray-600 */
+  --background-rgb: 249, 250, 251;  /* gray-50 */
+  --primary-blue: 43, 157, 195;  /* #2B9DC3 */
+  --dark-navy: 43, 40, 69;  /* #2B2845 */
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  min-height: 100vh;
+}
+
+/* Add consistent text styling */
+h1, h2, h3, h4, h5, h6 {
+  color: rgb(var(--dark-navy));
+}
+
+/* Add consistent link styling */
+a {
+  color: rgb(var(--primary-blue));
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: rgb(36, 138, 173); /* #248AAD */
+}
+
+/* Add consistent button styling */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Add consistent input styling */
+input, select, textarea {
+  background-color: white;
+  border-color: rgb(209, 213, 219); /* gray-300 */
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: rgb(var(--primary-blue));
+  outline: none;
+  ring-color: rgb(var(--primary-blue));
+}
+
+/* Add consistent card styling */
+.card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
