@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { furnitureProducts } from '../../lib/data';
-import { Product } from '../../../lib/types';
+import { Product } from '../../lib/types';
 
 export async function GET(request: NextRequest) {
   try {
