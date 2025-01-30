@@ -1,18 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { furnitureProducts } from '../../lib/data';
-import { Product } from '../../lib/types';
+import { Product, ApiResponse } from '../../lib/types';
 
 export async function GET(request: NextRequest) {
   try {
     if (!furnitureProducts || !Array.isArray(furnitureProducts)) {
       throw new Error('Products data is not properly initialized');
     }
-    const response = NextResponse.json(furnitureProducts);
+
+    const response = NextResponse.json<ApiResponse<Product[]>>({
+      data: furnitureProducts,
+      status: 200
+    });
     response.headers.set('Cache-Control', 's-maxage=3600');
     return response;
   } catch (error: unknown) {
-    console.error('GET /api/products error:', error);
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json<ApiResponse<never>>({
+      error: errorMessage,
+      status: 500
+    }, { status: 500 });
   }
 }
 
@@ -21,23 +28,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Validate required fields
-    if (!body.name || !body.price || !body.images || !body.description || !body.category) {
-      return NextResponse.json(
-        { error: 'Missing required fields: name, price, images, description, and category are required' },
-        { status: 400 }
-      );
-    }
-
-    // Validate data types
-    if (typeof body.name !== 'string' || 
-        typeof body.price !== 'number' || 
-        !Array.isArray(body.images) || 
-        typeof body.description !== 'string' || 
-        typeof body.category !== 'object') {
-      return NextResponse.json(
-        { error: 'Invalid data types for required fields' },
-        { status: 400 }
-      );
+    const requiredFields = ['name', 'price', 'images', 'description', 'category'] as const;
+    const missingFields = requiredFields.filter(field => !body[field]);
+    
+    if (missingFields.length > 0) {
+      return NextResponse.json<ApiResponse<never>>({
+        error: `Missing required fields: ${missingFields.join(', ')}`,
+        status: 400
+      }, { status: 400 });
     }
 
     const newProduct: Product = {
@@ -46,16 +44,24 @@ export async function POST(request: NextRequest) {
       price: body.price,
       images: body.images,
       description: body.description,
-      category: body.category
+      category: body.category,
+      specifications: body.specifications || [],
+      features: body.features || [],
+      stock: body.stock || 0,
+      rating: body.rating || 0
     };
     
-    (furnitureProducts as Product[]).push(newProduct);
-    return NextResponse.json(newProduct, { status: 201 });
+    furnitureProducts.push(newProduct);
+    
+    return NextResponse.json<ApiResponse<Product>>({
+      data: newProduct,
+      status: 201
+    }, { status: 201 });
   } catch (error: unknown) {
-    console.error('POST /api/products error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create product', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json<ApiResponse<never>>({
+      error: errorMessage,
+      status: 500
+    }, { status: 500 });
   }
 }
