@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 
 // In-memory storage for orders
-export const orders: any[] = [];
+const orders: any[] = [];
 
 export async function GET(request: Request) {
   try {
@@ -13,16 +13,11 @@ export async function GET(request: Request) {
     }
 
     const token = authHeader.split(' ')[1];
-    
     // For demo, we'll return all orders
-    // In production, you would verify the token and filter orders by user
     return NextResponse.json(orders);
   } catch (error) {
     console.error('Failed to fetch orders:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch orders' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -50,10 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {
     console.error('Failed to create order:', error);
-    return NextResponse.json(
-      { error: 'Failed to create order' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -64,18 +56,29 @@ export async function PUT(request: Request) {
 
     const order = orders.find(o => o._id === orderId);
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
     order.status = status;
     return NextResponse.json(order);
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update order' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+    const { orderId } = body;
+
+    const orderIndex = orders.findIndex(o => o._id === orderId);
+    if (orderIndex === -1) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    orders.splice(orderIndex, 1);
+    return NextResponse.json({ message: 'Order deleted' }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

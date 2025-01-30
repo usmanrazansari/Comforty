@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const furnitureProducts = [
+const furnitureProducts = [
   {
     _id: "1",
     name: 'Modern Leather Sofa',
@@ -282,7 +282,9 @@ export const furnitureProducts = [
   }
 ];
 
-export async function GET() {
+export { furnitureProducts };
+
+export async function GET(request: NextRequest) {
   try {
     if (!furnitureProducts || !Array.isArray(furnitureProducts)) {
       throw new Error('Products data is not properly initialized');
@@ -294,7 +296,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
@@ -332,15 +334,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-// Add category endpoint
-export async function getCategories() {
-  const categories = [
-    { id: 1, name: 'Living Room' },
-    { id: 2, name: 'Bedroom' },
-    { id: 3, name: 'Dining Room' },
-    { id: 4, name: 'Office' }
-  ];
-  return categories;
 }
