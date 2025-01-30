@@ -1,5 +1,5 @@
 export interface Product {
-  _id: string | number;
+  _id: string;
   name: string;
   price: number;
   images: string[];
@@ -8,10 +8,10 @@ export interface Product {
     name: string;
     _id: string;
   };
-  specifications?: {
+  specifications?: Array<{
     name: string;
     value: string;
-  }[];
+  }>;
   features?: string[];
   stock?: number;
   rating?: number;

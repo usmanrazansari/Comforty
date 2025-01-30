@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { furnitureProducts } from '../../lib/data';
-import { Product, ApiResponse } from '../../lib/types';
+import type { Product, ApiResponse } from '../../lib/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newProduct: Product = {
-      _id: (furnitureProducts.length + 1).toString(),
+      _id: String(furnitureProducts.length + 1),
       name: body.name,
       price: body.price,
       images: body.images,

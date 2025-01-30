@@ -1,31 +1,41 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Simple in-memory store for rate limiting
-const rateLimit = new Map();
+interface RateLimitData {
+  count: number;
+  timestamp: number;
+}
+
+const rateLimit = new Map<string, RateLimitData>();
+const WINDOW_SIZE = 15 * 60 * 1000; // 15 minutes
+const MAX_REQUESTS = 100;
 
 export function middleware(request: NextRequest) {
   const ip = request.ip ?? 'anonymous';
   const now = Date.now();
-  const windowStart = now - 15 * 60 * 1000; // 15 minutes ago
+  const rateLimitData = rateLimit.get(ip) ?? { count: 0, timestamp: now };
 
-  const requestHistory = rateLimit.get(ip) || [];
-  const requestsInWindow = requestHistory.filter((time: number) => time > windowStart);
-
-  if (requestsInWindow.length >= 100) { // 100 requests per 15 minutes
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  // Reset count if window has passed
+  if (now - rateLimitData.timestamp > WINDOW_SIZE) {
+    rateLimitData.count = 0;
+    rateLimitData.timestamp = now;
   }
 
-  requestsInWindow.push(now);
-  rateLimit.set(ip, requestsInWindow);
+  if (rateLimitData.count >= MAX_REQUESTS) {
+    return NextResponse.json(
+      { error: 'Too many requests', retryAfter: WINDOW_SIZE / 1000 },
+      { status: 429, headers: { 'Retry-After': (WINDOW_SIZE / 1000).toString() } }
+    );
+  }
 
-  // Get the token from localStorage instead of cookies
+  rateLimitData.count++;
+  rateLimit.set(ip, rateLimitData);
+
   const token = request.cookies.get('token');
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
-  const isProtectedRoute = 
-    request.nextUrl.pathname.startsWith('/orders') ||
-    request.nextUrl.pathname.startsWith('/wishlist') ||
-    request.nextUrl.pathname.startsWith('/profile');
+  const isProtectedRoute = ['/orders', '/wishlist', '/profile'].some(
+    route => request.nextUrl.pathname.startsWith(route)
+  );
 
   if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
