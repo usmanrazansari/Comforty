@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 // In-memory storage for orders
 const orders: any[] = [];
 
+// Handle GET requests
 export async function GET(request: Request) {
   try {
     // Get token from header
@@ -15,12 +16,13 @@ export async function GET(request: Request) {
     const token = authHeader.split(' ')[1];
     // For demo, we'll return all orders
     return NextResponse.json(orders);
-  } catch (error) {
-    console.error('Failed to fetch orders:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
+// Handle POST requests
 export async function POST(request: Request) {
   try {
     const body = await request.json();

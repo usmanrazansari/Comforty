@@ -289,7 +289,9 @@ export async function GET(request: NextRequest) {
     if (!furnitureProducts || !Array.isArray(furnitureProducts)) {
       throw new Error('Products data is not properly initialized');
     }
-    return NextResponse.json(furnitureProducts);
+    const response = NextResponse.json(furnitureProducts);
+    response.headers.set('Cache-Control', 's-maxage=3600');
+    return response;
   } catch (error: unknown) {
     console.error('GET /api/products error:', error);
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
