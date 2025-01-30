@@ -6,6 +6,7 @@ import Categories from './components/Categories'
 import Navbar from './components/Navbar'
 import PromoBanner from './components/PromoBanner'
 import Footer from './components/Footer'
+import Image from 'next/image'
 
 type UserProfile = {
   name: string;
@@ -36,23 +37,23 @@ export default function Home() {
     <>
       <Navbar />
       {isLoggedIn && userProfile && (
-        <div className="bg-[#2B9DC3] text-white py-4">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-black border-t border-b text-white">
+          <div className="max-w-7xl mx-auto py-6 px-4">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-semibold">Welcome back, {userProfile.name}!</h2>
-                <p className="text-sm opacity-90">Member since {new Date(userProfile.createdAt).toLocaleDateString()}</p>
+                <p className="text-lg font-medium text-white">Welcome back, {userProfile.name}!</p>
+                <p className="text-sm text-white opacity-90">Member since {new Date(userProfile.createdAt).toLocaleDateString()}</p>
               </div>
               <div className="flex space-x-4">
                 <button 
                   onClick={() => window.location.href = '/orders'}
-                  className="bg-white text-[#2B9DC3] px-4 py-2 rounded-lg hover:bg-opacity-90"
+                  className="bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-100 shadow-md"
                 >
                   My Orders
                 </button>
                 <button 
                   onClick={() => window.location.href = '/wishlist'}
-                  className="bg-white text-[#2B9DC3] px-4 py-2 rounded-lg hover:bg-opacity-90"
+                  className="bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-100 shadow-md"
                 >
                   My Wishlist
                 </button>
@@ -62,7 +63,20 @@ export default function Home() {
         </div>
       )}
       <main className="flex flex-col bg-gray-100">
-        <Hero />
+        {/* Hero Section */}
+        <div className="relative w-full h-[500px] sm:h-[600px] lg:h-[700px] overflow-hidden">
+          <div className="absolute inset-0">
+            <Image
+              src="/images/Header.png"
+              alt="Welcome Header"
+              fill
+              priority
+              className="object-contain w-full scale-100 transition-transform duration-700 hover:scale-105"
+              sizes="100vw"
+              quality={100}
+            />
+          </div>
+        </div>
         <div className="-mt-[1vw] sm:-mt-[2vw] md:-mt-[2.5vw] lg:-mt-[2vw]">
           <PromoBanner />
         </div>

@@ -23,9 +23,11 @@ export default function FeaturedProducts() {
   }, []);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold text-[#2B2845] mb-8">Featured Products</h2>
-      <ProductGrid products={products} loading={loading} />
+    <section className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold text-[#2B2845] mb-8">Featured Products</h2>
+        <ProductGrid products={products} loading={loading} />
+      </div>
     </section>
   );
 }

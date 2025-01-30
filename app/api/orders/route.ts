@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
-import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
-// Mock data - replace with your database later
-let orders: any[] = [];
+// In-memory storage for orders
+export const orders: any[] = [];
 
 export async function GET(request: Request) {
   try {
@@ -14,14 +13,9 @@ export async function GET(request: Request) {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-
-    // Fetch orders from Sanity
-    const orders = await client.fetch(
-      `*[_type == "order" && userId == $userId] | order(createdAt desc)`,
-      { userId: decoded.userId }
-    );
-
+    
+    // For demo, we'll return all orders
+    // In production, you would verify the token and filter orders by user
     return NextResponse.json(orders);
   } catch (error) {
     console.error('Failed to fetch orders:', error);
@@ -35,11 +29,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, items, shippingAddress, paymentMethod } = body;
+    const { items, shippingAddress, paymentMethod } = body;
+
+    // Validate required fields
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Invalid items' }, { status: 400 });
+    }
 
     const newOrder = {
-      id: orders.length + 1,
-      userId,
+      _id: uuidv4(),
       items,
       shippingAddress,
       paymentMethod,
@@ -51,6 +49,7 @@ export async function POST(request: Request) {
     orders.push(newOrder);
     return NextResponse.json(newOrder, { status: 201 });
   } catch (error) {
+    console.error('Failed to create order:', error);
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }
@@ -63,7 +62,7 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { orderId, status } = body;
 
-    const order = orders.find(o => o.id === orderId);
+    const order = orders.find(o => o._id === orderId);
     if (!order) {
       return NextResponse.json(
         { error: 'Order not found' },

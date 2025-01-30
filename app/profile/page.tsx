@@ -1,131 +1,80 @@
 'use client'
-import { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
-
-type UserProfile = {
-  name: string;
-  email: string;
-  createdAt: string;
-};
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Profile() {
-  const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/auth/login');
-      return;
+    // Check if user is authenticated
+    const token = localStorage.getItem('token')
+    const userStr = localStorage.getItem('user')
+    
+    if (!token || !userStr) {
+      router.push('/auth/login')
+      return
     }
 
-    fetchProfile();
-  }, [router]);
+    setUser(JSON.parse(userStr))
+  }, [router])
 
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error);
-      }
-
-      setProfile(data);
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
-      toast.error('Failed to load profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.dispatchEvent(new Event('storage'));
-    router.push('/auth/login');
-    toast.success('Logged out successfully');
-  };
-
-  if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#2B9DC3]"></div>
-        </div>
-        <Footer />
-      </>
-    );
+  if (!user) {
+    return null
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-3xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">My Profile</h1>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50"
-              >
-                Logout
-              </button>
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow rounded-lg p-6 md:p-8">
+          <div className="flex items-center space-x-4">
+            <div className="h-16 w-16 bg-[#2B9DC3] text-white rounded-full flex items-center justify-center text-2xl">
+              {user.name[0].toUpperCase()}
             </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+              <p className="text-gray-600">{user.email}</p>
+            </div>
+          </div>
 
-            {profile && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
-                  <p className="mt-1 text-lg">{profile.name}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <p className="mt-1 text-lg">{profile.email}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Member Since</label>
-                  <p className="mt-1 text-lg">
-                    {new Date(profile.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
+          <div className="mt-8 border-t border-gray-200 pt-8">
+            <h2 className="text-lg font-medium text-gray-900">Profile Information</h2>
+            <dl className="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Full Name</dt>
+                <dd className="mt-1 text-sm text-gray-900">{user.name}</dd>
               </div>
-            )}
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Email</dt>
+                <dd className="mt-1 text-sm text-gray-900">{user.email}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Member Since</dt>
+                <dd className="mt-1 text-sm text-gray-900">
+                  {new Date().toLocaleDateString()}
+                </dd>
+              </div>
+            </dl>
+          </div>
 
-            <div className="mt-8 space-y-4">
-              <h2 className="text-xl font-semibold">Quick Links</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button
-                  onClick={() => router.push('/orders')}
-                  className="p-4 border rounded-lg hover:bg-gray-50 text-left"
-                >
-                  <h3 className="font-medium">My Orders</h3>
-                  <p className="text-sm text-gray-600">View your order history</p>
-                </button>
-                <button
-                  onClick={() => router.push('/wishlist')}
-                  className="p-4 border rounded-lg hover:bg-gray-50 text-left"
-                >
-                  <h3 className="font-medium">My Wishlist</h3>
-                  <p className="text-sm text-gray-600">View saved items</p>
-                </button>
-              </div>
+          <div className="mt-8 border-t border-gray-200 pt-8">
+            <h2 className="text-lg font-medium text-gray-900">Account Settings</h2>
+            <div className="mt-4 space-y-4">
+              <button
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2B9DC3] hover:bg-[#248AAD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2B9DC3]"
+                onClick={() => {
+                  localStorage.removeItem('token')
+                  localStorage.removeItem('user')
+                  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+                  router.push('/auth/login')
+                }}
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <Footer />
-    </>
-  );
-} 
+    </div>
+  )
+}

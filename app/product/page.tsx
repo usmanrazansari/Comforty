@@ -5,18 +5,36 @@ import ProductFilter from '../components/ProductFilter'
 import ProductGrid from '../components/ProductGrid'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Product } from '../../components/ProductDetails';
 
 export default function Products() {
+  const searchParams = useSearchParams()
+  const categoryParam = searchParams.get('category')
+  
   const [showFilters, setShowFilters] = useState(false)
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam || 'all')
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         const response = await fetch('/api/products')
         const data = await response.json()
-        setProducts(data)
+        
+        // Filter products by category if one is selected
+        const filteredProducts = categoryParam
+          ? data.filter((product: Product) => {
+              if (!product.category) return false;
+              const productCategory = typeof product.category === 'string' 
+                ? product.category 
+                : product.category.name;
+              return productCategory.toLowerCase() === categoryParam.toLowerCase();
+            })
+          : data;
+        
+        setProducts(filteredProducts)
       } catch (error) {
         console.error('Error:', error)
       } finally {
@@ -25,11 +43,12 @@ export default function Products() {
     }
 
     fetchProducts()
-  }, [])
+  }, [categoryParam])
 
   return (
-    <>
+    <main>
       <Navbar />
+      
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Filters - Mobile Toggle */}
@@ -42,13 +61,18 @@ export default function Products() {
 
           {/* Filters - Sidebar */}
           <div className={`${showFilters ? 'block' : 'hidden'} md:block md:w-64`}>
-            <ProductFilter />
+            <ProductFilter selectedCategory={selectedCategory} />
           </div>
 
           {/* Main Content */}
           <div className="flex-1">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <h1 className="text-2xl font-bold text-[#2B2845]">All Products</h1>
+              <h1 className="text-2xl font-bold text-[#2B2845]">
+                {categoryParam 
+                  ? `${categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)} Products`
+                  : 'All Products'
+                }
+              </h1>
               <select className="w-full sm:w-auto border p-2 rounded-lg bg-white text-gray-600 focus:border-[#2B9DC3] focus:ring-[#2B9DC3]">
                 <option>Sort by: Featured</option>
                 <option>Price: Low to High</option>
@@ -102,6 +126,6 @@ export default function Products() {
         </div>
       </div>
       <Footer />
-    </>
+    </main>
   )
 }

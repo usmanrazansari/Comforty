@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 
-export default function ProductFilter() {
+interface ProductFilterProps {
+  selectedCategory?: string;
+}
+
+export default function ProductFilter({ selectedCategory }: ProductFilterProps) {
     const [priceRange, setPriceRange] = useState(5000);
 
     return (

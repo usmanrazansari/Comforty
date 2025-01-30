@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: 'Comforty - Modern Furniture Store',
   description: 'Shop the best modern furniture for your home.',
   keywords: 'furniture, modern furniture, home decor, sofa, chair, table',
+  icons: {
+    icon: '/images/Company Logo.png',
+  }
 };
 
 export default function RootLayout({
@@ -20,6 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/images/Company Logo.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/images/Company Logo.png" />
+      </head>
       <body className={inter.className}>
         <CartProvider>
           <WishlistProvider>

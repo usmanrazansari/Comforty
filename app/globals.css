@@ -3,31 +3,35 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 75, 85, 99;  /* gray-600 */
-  --background-rgb: 249, 250, 251;  /* gray-50 */
-  --primary-blue: 43, 157, 195;  /* #2B9DC3 */
-  --dark-navy: 43, 40, 69;  /* #2B2845 */
+  --primary-color: #212121;
+  --secondary-color: #B8860B;
+  --accent-color: #9E9E9E;
+  --text-color: #424242;
+  --background-color: #FAFAFA;
+  --white: #FFFFFF;
+  --hover-gold: #996515;
+  --border-color: #E0E0E0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  background-color: var(--background-color);
+  color: var(--text-color);
   min-height: 100vh;
 }
 
 /* Add consistent text styling */
 h1, h2, h3, h4, h5, h6 {
-  color: rgb(var(--dark-navy));
+  color: var(--primary-color);
 }
 
 /* Add consistent link styling */
 a {
-  color: rgb(var(--primary-blue));
+  color: var(--secondary-color);
   transition: color 0.2s ease-in-out;
 }
 
 a:hover {
-  color: rgb(36, 138, 173); /* #248AAD */
+  color: var(--hover-gold);
 }
 
 /* Add consistent button styling */
@@ -35,16 +39,37 @@ button {
   transition: all 0.2s ease-in-out;
 }
 
+.btn-primary {
+  background-color: var(--secondary-color);
+  color: var(--white);
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-gold);
+}
+
+.btn-secondary {
+  background-color: var(--white);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--background-color);
+}
+
 /* Add consistent input styling */
 input, select, textarea {
   background-color: white;
-  border-color: rgb(209, 213, 219); /* gray-300 */
+  border-color: var(--border-color);
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: rgb(var(--primary-blue));
+  border-color: var(--secondary-color);
   outline: none;
-  ring-color: rgb(var(--primary-blue));
+  ring-color: var(--secondary-color);
 }
 
 /* Add consistent card styling */
@@ -52,6 +77,30 @@ input:focus, select:focus, textarea:focus {
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
 }
 
 @layer utilities {

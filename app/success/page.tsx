@@ -7,12 +7,11 @@ import Footer from '@/components/Footer';
 
 export default function Success() {
   const router = useRouter();
-  const { cartItems, clearCart } = useCart();
+  const { clearCart } = useCart();
 
   useEffect(() => {
-    // Clear the cart after successful payment
     clearCart();
-  }, []);
+  }, []); // Only run once on mount
 
   return (
     <>
@@ -43,4 +42,4 @@ export default function Success() {
       <Footer />
     </>
   );
-} 
+}

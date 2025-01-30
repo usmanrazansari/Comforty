@@ -60,109 +60,107 @@ export default function Footer({ variant = 'default' }: FooterProps) {
   const isLight = variant === 'light';
   
   return (
-    <footer className={`${isLight ? 'bg-white text-gray-800' : 'bg-[#2B2845] text-white'}`} aria-labelledby="footer-heading">
-      <h2 id="footer-heading" className="sr-only">Footer</h2>
-      
-      {/* Newsletter Section */}
-      <div className={`border-b ${isLight ? 'border-gray-200' : 'border-white/10'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-center md:text-left max-w-md">
-              <h3 className="text-xl font-semibold">Sign up for our newsletter</h3>
-              <p className={`mt-2 text-sm ${isLight ? 'text-gray-600' : 'text-gray-300'}`}>
-                Stay up to date with the latest products, exclusive offers, and interior design tips.
-              </p>
+    <footer className="bg-[#212121] text-white">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-[#B8860B] font-bold text-lg mb-4">Comforty</h3>
+            <p className="text-gray-300 text-sm">
+              Premium furniture for elegant living spaces. Quality, style, and comfort combined.
+            </p>
+          </div>
+          
+          <div>
+            <h4 className="text-[#B8860B] font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li>
+                <a href="/about" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="/products" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  Products
+                </a>
+              </li>
+              <li>
+                <a href="/categories" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  Categories
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="text-[#B8860B] font-semibold mb-4">Customer Service</h4>
+            <ul className="space-y-2">
+              <li>
+                <a href="/faq" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a href="/shipping" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  Shipping Policy
+                </a>
+              </li>
+              <li>
+                <a href="/returns" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  Returns & Refunds
+                </a>
+              </li>
+              <li>
+                <a href="/privacy" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                  Privacy Policy
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="text-[#B8860B] font-semibold mb-4">Connect With Us</h4>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                <span className="sr-only">Facebook</span>
+                📱
+              </a>
+              <a href="#" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                <span className="sr-only">Instagram</span>
+                📸
+              </a>
+              <a href="#" className="text-gray-300 hover:text-[#B8860B] transition-colors duration-200">
+                <span className="sr-only">Twitter</span>
+                🐦
+              </a>
             </div>
-            <form className="w-full md:w-auto max-w-md">
-              <div className="flex gap-x-3">
+            <div className="mt-4">
+              <h5 className="text-[#B8860B] font-semibold mb-2">Newsletter</h5>
+              <form className="flex">
                 <input
                   type="email"
-                  className={`min-w-0 flex-auto rounded-lg border-0 px-4 py-3 ${
-                    isLight 
-                      ? 'bg-gray-100 text-gray-900 ring-1 ring-gray-300' 
-                      : 'bg-white/5 text-white ring-1 ring-white/10'
-                  }`}
                   placeholder="Enter your email"
+                  className="bg-white text-[#212121] px-4 py-2 rounded-l-md focus:outline-none flex-1"
                 />
                 <button
                   type="submit"
-                  className="flex-none rounded-lg bg-[#2B9DC3] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2589ab]"
+                  className="bg-[#B8860B] text-white px-4 py-2 rounded-r-md hover:bg-[#996515] transition-colors duration-200"
                 >
                   Subscribe
                 </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          {/* Brand Section */}
-          <div className="space-y-8">
-            <div className="flex items-center">
-              <span className="text-[#2B9DC3] text-3xl">🛋️</span>
-              <span className="ml-2 text-xl font-bold">Comforty</span>
-            </div>
-            <p className={`text-sm ${isLight ? 'text-gray-600' : 'text-gray-300'} max-w-xs`}>
-              Making your home beautiful with carefully crafted furniture since 2024. Quality, comfort, and style for every space.
-            </p>
-            <div className="flex space-x-6">
-              {socialLinks.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-400 hover:text-[#2B9DC3] transition-colors duration-200"
-                >
-                  <span className="sr-only">{item.name}</span>
-                  <item.icon className="h-6 w-6" aria-hidden="true" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Links Sections */}
-          <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold text-white">Shop</h3>
-                <ul role="list" className="mt-4 space-y-4">
-                  {footerLinks.shop.map((item) => (
-                    <li key={item.name}>
-                      <a href={item.href} className="text-sm text-gray-300 hover:text-white transition-colors duration-200">
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold text-white">Support</h3>
-                <ul role="list" className="mt-4 space-y-4">
-                  {footerLinks.support.map((item) => (
-                    <li key={item.name}>
-                      <a href={item.href} className="text-sm text-gray-300 hover:text-white transition-colors duration-200">
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white">Company</h3>
-              <ul role="list" className="mt-4 space-y-4">
-                {footerLinks.company.map((item) => (
-                  <li key={item.name}>
-                    <a href={item.href} className="text-sm text-gray-300 hover:text-white transition-colors duration-200">
-                      {item.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+        
+        <div className="mt-8 pt-8 border-t border-gray-700">
+          <p className="text-center text-gray-400">
+            {new Date().getFullYear()} Comforty. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

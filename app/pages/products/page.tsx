@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
 interface Product {
-  id: number
-  name: string
-  price: number
-  image: string
-  category: string
-  description: string
+  _id: string;
+  name: string;
+  price: number;
+  images: string[];
+  description: string;
 }
 
 export default function Products() {
@@ -35,97 +34,85 @@ export default function Products() {
 
   const filteredProducts = products
     .filter(product => 
-      selectedCategory === 'all' || product.category.toLowerCase() === selectedCategory
+      selectedCategory === 'all'
     )
     .sort((a, b) => {
-      if (sortBy === 'price-low') return a.price - b.price
-      if (sortBy === 'price-high') return b.price - a.price
-      return 0
+      switch (sortBy) {
+        case 'price-low':
+          return a.price - b.price
+        case 'price-high':
+          return b.price - a.price
+        case 'name':
+          return a.name.localeCompare(b.name)
+        default:
+          return 0
+      }
     })
 
-  const addToCart = async (productId: number) => {
-    try {
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId,
-          quantity: 1,
-        }),
-      })
-
-      if (response.ok) {
-        // Show success message or update cart count
-      }
-    } catch (error) {
-      console.error('Error adding to cart:', error)
-    }
-  }
-
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    )
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h1 className="text-2xl font-bold">All Products</h1>
-        
-        <div className="flex gap-4">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="border rounded-md px-3 py-1"
-          >
-            <option value="all">All Categories</option>
-            <option value="chairs">Chairs</option>
-            <option value="sofas">Sofas</option>
-            <option value="tables">Tables</option>
-          </select>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Filters */}
+        <div className="md:w-1/4">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="font-semibold mb-4">Categories</h3>
+            <select 
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="all">All Categories</option>
+            </select>
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="border rounded-md px-3 py-1"
-          >
-            <option value="featured">Featured</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          >
-            <div className="relative aspect-square">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover rounded-t-lg"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="font-medium">{product.name}</h3>
-              <p className="text-sm text-gray-500">{product.category}</p>
-              <p className="font-medium text-[#2B9DC3] mt-1">
-                ${product.price}
-              </p>
-              <button
-                onClick={() => addToCart(product.id)}
-                className="w-full mt-4 bg-[#2B9DC3] text-white py-2 rounded-md hover:bg-[#248AAD]"
-              >
-                Add to Cart
-              </button>
-            </div>
+            <h3 className="font-semibold mt-6 mb-4">Sort By</h3>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="name">Name</option>
+            </select>
           </div>
-        ))}
+        </div>
+
+        {/* Product Grid */}
+        <div className="md:w-3/4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="relative h-48">
+                  <Image
+                    src={product.images[0]}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{product.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold">${product.price}</span>
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

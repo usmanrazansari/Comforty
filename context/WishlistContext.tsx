@@ -18,30 +18,51 @@ const WishlistContext = createContext<WishlistContextType>({
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load wishlist from localStorage
+  // Load wishlist from localStorage only once on mount
   useEffect(() => {
-    const saved = localStorage.getItem('wishlist');
-    if (saved) {
-      setWishlist(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem('wishlist');
+      if (saved) {
+        setWishlist(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading wishlist:', error);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
-  // Save wishlist to localStorage
+  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }, [wishlist]);
+    if (isInitialized) {
+      try {
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      } catch (error) {
+        console.error('Error saving wishlist:', error);
+      }
+    }
+  }, [wishlist, isInitialized]);
 
   const addToWishlist = (productId: string) => {
-    if (!wishlist.includes(productId)) {
-      setWishlist(prev => [...prev, productId]);
-      toast.success('Added to wishlist');
-    }
+    setWishlist(prev => {
+      if (!prev.includes(productId)) {
+        toast.success('Added to wishlist');
+        return [...prev, productId];
+      }
+      return prev;
+    });
   };
 
   const removeFromWishlist = (productId: string) => {
-    setWishlist(prev => prev.filter(id => id !== productId));
-    toast.success('Removed from wishlist');
+    setWishlist(prev => {
+      const newWishlist = prev.filter(id => id !== productId);
+      if (newWishlist.length !== prev.length) {
+        toast.success('Removed from wishlist');
+      }
+      return newWishlist;
+    });
   };
 
   const isInWishlist = (productId: string) => {
@@ -49,15 +70,23 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <WishlistContext.Provider value={{
-      wishlist,
-      addToWishlist,
-      removeFromWishlist,
-      isInWishlist
-    }}>
+    <WishlistContext.Provider
+      value={{
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+        isInWishlist,
+      }}
+    >
       {children}
     </WishlistContext.Provider>
   );
 }
 
-export const useWishlist = () => useContext(WishlistContext); 
+export const useWishlist = () => {
+  const context = useContext(WishlistContext);
+  if (!context) {
+    throw new Error('useWishlist must be used within a WishlistProvider');
+  }
+  return context;
+};

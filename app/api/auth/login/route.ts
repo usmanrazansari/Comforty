@@ -1,99 +1,95 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import { findUser } from '../store';
 
-export async function POST(request: Request) {
+// Define allowed methods
+export const dynamic = 'force-dynamic';
+
+// Add CORS headers helper
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+}
+
+// Handle OPTIONS request
+export async function OPTIONS() {
+  return NextResponse.json({}, { 
+    headers: corsHeaders(),
+  });
+}
+
+export async function POST(req: Request) {
   try {
-    // Add CORS headers
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json'
-    };
+    console.log('=== LOGIN ATTEMPT ===');
+    // Add CORS headers to the response
+    const headers = corsHeaders();
+    
+    const body = await req.json();
+    console.log('Login request body:', { email: body.email, hasPassword: !!body.password });
+    
+    const { email, password } = body;
 
-    const { email, password } = await request.json();
-
-    // Validate input
+    // Basic validation
     if (!email || !password) {
+      console.log('Missing required fields:', { email: !!email, password: !!password });
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Missing required fields' },
         { status: 400, headers }
       );
     }
 
-    // Find user by email
-    const user = await client.fetch(
-      `*[_type == "user" && email == $email][0]{
-        _id,
-        name,
-        email,
-        password,
-        createdAt
-      }`,
-      { email }
-    );
-
-    console.log('Found user:', user); // Debug log
-
+    // Find user
+    console.log('Looking for user with email:', email);
+    const user = findUser(email);
+    
     if (!user) {
+      console.log('User not found in store');
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'Invalid credentials' },
         { status: 401, headers }
       );
     }
 
     // Verify password
-    const validPassword = await bcrypt.compare(password, user.password);
-    console.log('Password valid:', validPassword); // Debug log
-
-    if (!validPassword) {
+    console.log('Comparing passwords for user:', email);
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log('Password validation result:', isValidPassword);
+    
+    if (!isValidPassword) {
+      console.log('Invalid password provided');
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'Invalid credentials' },
         { status: 401, headers }
       );
     }
 
-    if (!process.env.JWT_SECRET) {
-      throw new Error('JWT_SECRET is not configured');
-    }
-
-    // Generate JWT token with user info
-    const token = jwt.sign(
-      {
-        userId: user._id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.createdAt
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
+    // Create session token
+    const token = uuidv4();
+    console.log('Login successful for user:', email);
+    console.log('===================');
+    
+    // Return success response with CORS headers
     return NextResponse.json({
+      message: 'Login successful',
       token,
       user: {
+        id: user.id,
         name: user.name,
-        email: user.email,
-        createdAt: user.createdAt
+        email: user.email
       }
-    }, { headers });
-
-  } catch (error: any) {
+    }, { 
+      status: 200,
+      headers
+    });
+  } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Login failed: ' + error.message },
-      { status: 500 }
+      { error: 'An error occurred during login' },
+      { status: 500, headers: corsHeaders() }
     );
   }
-}
-
-// Handle OPTIONS request for CORS
-export async function OPTIONS() {
-  return NextResponse.json({}, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    }
-  });
 }

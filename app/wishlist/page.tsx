@@ -56,7 +56,7 @@ export default function Wishlist() {
       <>
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold mb-8">My Wishlist</h1>
+          <h1 className="text-2xl font-bold mb-8 bg-black text-white px-4 py-2 rounded-lg inline-block">My Wishlist</h1>
           <div>Loading...</div>
         </div>
         <Footer />
@@ -68,7 +68,7 @@ export default function Wishlist() {
     <>
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-8">My Wishlist</h1>
+        <h1 className="text-2xl font-bold mb-8 bg-black text-white px-4 py-2 rounded-lg inline-block">My Wishlist</h1>
         {products.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-600">Your wishlist is empty</p>
@@ -78,7 +78,7 @@ export default function Wishlist() {
             {products.map((product) => (
               <div key={product._id} className="bg-white rounded-lg shadow p-6">
                 <div className="relative h-48 mb-4">
-                  {product.images[0] && (
+                  {product.images && product.images.length > 0 && (
                     <Image
                       src={product.images[0]}
                       alt={product.name}
@@ -100,7 +100,7 @@ export default function Wishlist() {
                       removeFromWishlist(product._id);
                       toast.success(`${product.name} added to cart`);
                     }}
-                    className="flex-1 bg-[#2B9DC3] text-white px-4 py-2 rounded hover:bg-[#248AAD]"
+                    className="flex-1 bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
                   >
                     Add to Cart
                   </button>
@@ -109,7 +109,7 @@ export default function Wishlist() {
                       removeFromWishlist(product._id);
                       toast.success(`${product.name} removed from wishlist`);
                     }}
-                    className="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
+                    className="px-4 py-2 border border-black text-black rounded hover:bg-gray-100"
                   >
                     Remove
                   </button>

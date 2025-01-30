@@ -1,5 +1,6 @@
 'use client'
 import { ButtonHTMLAttributes, ReactNode } from 'react'
+import clsx from 'clsx'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode
@@ -22,9 +23,9 @@ export default function Button({
   const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
   
   const variants = {
-    primary: 'bg-[#2B9DC3] text-white hover:bg-[#248AAD] focus:ring-[#2B9DC3]',
+    primary: 'bg-[#2C5282] text-white hover:bg-[#234876] focus:ring-[#2C5282]',
     secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500',
-    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-[#2B9DC3]',
+    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-[#2C5282]',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
   }
 
@@ -40,14 +41,16 @@ export default function Button({
 
   return (
     <button
-      className={`
-        ${baseStyles}
-        ${variants[variant]}
-        ${sizes[size]}
-        ${width}
-        ${loading}
-        ${className}
-      `}
+      className={clsx(
+        'inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+        'focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+        {
+          'bg-black text-white hover:bg-[#333333] focus:ring-black': variant === 'primary',
+          'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300': variant === 'secondary',
+          'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-black': variant === 'outline',
+        },
+        className
+      )}
       disabled={isDisabled}
       {...props}
     >

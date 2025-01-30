@@ -32,8 +32,9 @@ const CartContext = createContext<CartContextType>({
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load cart from localStorage
+  // Load cart from localStorage only once on mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('cart');
@@ -42,106 +43,91 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error loading cart:', error);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
-  // Save cart to localStorage
+  // Save cart to localStorage whenever it changes
   useEffect(() => {
-    try {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
-    } catch (error) {
-      console.error('Error saving cart:', error);
+    if (isInitialized) {
+      try {
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+      } catch (error) {
+        console.error('Error saving cart:', error);
+      }
     }
-  }, [cartItems]);
+  }, [cartItems, isInitialized]);
 
   const addToCart = (item: CartItem) => {
-    try {
-      setCartItems(prev => {
-        const existingItem = prev.find(i => i._id === item._id);
-        if (existingItem) {
-          toast.success('Updated quantity in cart');
-          return prev.map(i => 
-            i._id === item._id 
-              ? { ...i, quantity: i.quantity + 1 }
-              : i
-          );
-        }
-        toast.success('Added to cart');
-        return [...prev, { ...item, quantity: 1 }];
-      });
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error('Failed to add to cart');
-    }
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(i => i._id === item._id);
+      if (existingItem) {
+        return prevItems.map(i =>
+          i._id === item._id
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
+        );
+      }
+      return [...prevItems, item];
+    });
+    toast.success('Added to cart');
   };
 
   const removeFromCart = (itemId: string) => {
-    try {
-      setCartItems(prev => prev.filter(item => item._id !== itemId));
-      toast.success('Removed from cart');
-    } catch (error) {
-      console.error('Error removing from cart:', error);
-      toast.error('Failed to remove from cart');
-    }
+    setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
+    toast.success('Removed from cart');
   };
 
   const updateQuantity = (itemId: string, quantity: number) => {
-    try {
-      if (quantity < 1) return;
-      setCartItems(prev => 
-        prev.map(item => 
-          item._id === itemId 
-            ? { ...item, quantity }
-            : item
-        )
-      );
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-      toast.error('Failed to update quantity');
+    if (quantity < 1) {
+      removeFromCart(itemId);
+      return;
     }
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item._id === itemId
+          ? { ...item, quantity }
+          : item
+      )
+    );
   };
 
   const getCartTotal = () => {
-    try {
-      return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    } catch (error) {
-      console.error('Error calculating total:', error);
-      return 0;
-    }
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const getCartCount = () => {
-    try {
-      return cartItems.reduce((count, item) => count + item.quantity, 0);
-    } catch (error) {
-      console.error('Error calculating count:', error);
-      return 0;
-    }
+    return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
 
   const clearCart = () => {
-    try {
-      setCartItems([]);
-      localStorage.removeItem('cart');
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      toast.error('Failed to clear cart');
-    }
+    setCartItems([]);
+    localStorage.removeItem('cart'); // Directly remove from localStorage
+    toast.success('Cart cleared');
   };
 
   return (
-    <CartContext.Provider value={{ 
-      cartItems, 
-      addToCart, 
-      removeFromCart, 
-      updateQuantity,
-      getCartTotal,
-      getCartCount,
-      clearCart
-    }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        getCartTotal,
+        getCartCount,
+        clearCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
 }
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};

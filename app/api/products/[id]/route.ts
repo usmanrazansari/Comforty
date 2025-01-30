@@ -1,47 +1,31 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/lib/sanity';
-import { PortableText } from '@portabletext/react';
+import { furnitureProducts } from '../route';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await client.fetch(
-      `*[_type == "product" && _id == $id][0]{
-        _id,
-        name,
-        description,
-        price,
-        "images": images[].asset->url,
-        features,
-        specifications,
-        category->{name}
-      }`,
-      { id: params.id }
-    );
+    console.log('Fetching product with ID:', params.id);
+    console.log('Available products:', furnitureProducts);
+    
+    const product = furnitureProducts.find(p => p._id === params.id);
+    console.log('Found product:', product);
 
     if (!product) {
+      console.log('Product not found');
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       );
     }
 
-    // Convert description to plain text array if it exists
-    const description = product.description 
-      ? product.description.map((block: any) => block.children?.[0]?.text || '').filter(Boolean)
-      : [];
-
-    return NextResponse.json({
-      ...product,
-      description
-    });
+    return NextResponse.json(product);
   } catch (error) {
-    console.error('Failed to fetch product:', error);
+    console.error('GET /api/products/[id] error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch product' },
       { status: 500 }
     );
   }
-} 
+}

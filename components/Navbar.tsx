@@ -52,14 +52,14 @@ export default function Navbar() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.dispatchEvent(new Event('storage'));
-    router.push('/auth/login');
+    window.location.href = '/auth/login';
   };
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-black shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-[#2B9DC3]">
+          <Link href="/" className="text-2xl font-bold text-white">
             Comforty
           </Link>
 
@@ -73,7 +73,7 @@ export default function Navbar() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                    className="flex items-center space-x-2 text-white hover:text-gray-300"
                   >
                     <span className="text-sm font-medium">Hi, {userName}</span>
                     <svg
@@ -92,31 +92,31 @@ export default function Navbar() {
                   </button>
 
                   {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                    <div className="absolute right-0 mt-2 w-48 bg-black rounded-md shadow-lg py-1 z-10">
                       <Link
                         href="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm text-white hover:bg-gray-800"
                         onClick={() => setShowDropdown(false)}
                       >
                         Profile
                       </Link>
                       <Link
                         href="/orders"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm text-white hover:bg-gray-800"
                         onClick={() => setShowDropdown(false)}
                       >
                         Orders
                       </Link>
                       <Link
                         href="/wishlist"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm text-white hover:bg-gray-800"
                         onClick={() => setShowDropdown(false)}
                       >
                         Wishlist ({wishlist.length})
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-800"
                       >
                         Logout
                       </button>
@@ -125,13 +125,24 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <Link href="/auth/login" className="text-gray-600 hover:text-gray-900">
-                Login
-              </Link>
+              <div className="flex items-center space-x-4">
+                <Link 
+                  href="/auth/login"
+                  className="text-white hover:text-gray-300"
+                >
+                  Login
+                </Link>
+                <Link 
+                  href="/auth/register"
+                  className="text-white bg-[#2B9DC3] hover:bg-[#248AAD] px-4 py-2 rounded-md"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
             <Link 
               href="/cart" 
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              className="flex items-center text-white hover:text-gray-300"
             >
               <span>Cart</span>
               <span className="ml-1 bg-[#2B9DC3] text-white rounded-full px-2 py-1 text-xs">
@@ -143,4 +154,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-} 
+}
