@@ -6,14 +6,14 @@ import ProductGrid from '../components/ProductGrid'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Product } from '../../components/ProductDetails';
+import { Product } from '../lib/types';
 
 export default function Products() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
   
   const [showFilters, setShowFilters] = useState(false)
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || 'all')
 
@@ -80,7 +80,7 @@ export default function Products() {
                 <option>Newest First</option>
               </select>
             </div>
-            <ProductGrid products={products} loading={loading} />
+            <ProductGrid products={products} />
           </div>
         </div>
 
