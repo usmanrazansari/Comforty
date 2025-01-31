@@ -1,5 +1,5 @@
 import { client } from '../app/lib/sanity';
-import { furnitureProducts } from '../app/api/products/route';
+import { furnitureProducts } from '../app/lib/data';
 
 async function migrateProducts() {
   try {
@@ -8,6 +8,9 @@ async function migrateProducts() {
         _type: 'product',
         name: product.name,
         price: product.price,
+        category: product.category.name,
+        images: product.images,
+        description: product.description,
         // ... map other fields
       });
     }

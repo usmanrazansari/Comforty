@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { furnitureProducts } from '../../lib/data';
 import type { Product, ApiResponse } from '../../lib/types';
+import { furnitureProducts } from '../../lib/data';
 
 export async function GET(request: NextRequest) {
   try {
-    if (!furnitureProducts || !Array.isArray(furnitureProducts)) {
-      throw new Error('Products data is not properly initialized');
-    }
-
     const response = NextResponse.json<ApiResponse<Product[]>>({
       data: furnitureProducts,
       status: 200

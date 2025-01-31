@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import ProductFilter from '../components/ProductFilter'
@@ -8,7 +9,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Product } from '../lib/types';
 
-export default function Products() {
+function ProductContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
   
@@ -127,5 +128,13 @@ export default function Products() {
       </div>
       <Footer />
     </main>
+  )
+}
+
+export default function Products() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductContent />
+    </Suspense>
   )
 }

@@ -28,7 +28,7 @@ export const logger = {
     }
   },
 
-  private log(
+  log(
     level: LogLevel,
     message: string,
     error?: Error,

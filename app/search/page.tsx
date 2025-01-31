@@ -2,8 +2,9 @@
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { Suspense } from 'react'
 
-export default function SearchResults() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q');
 
@@ -18,5 +19,13 @@ export default function SearchResults() {
       </div>
       <Footer />
     </>
+  );
+}
+
+export default function Search() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 } 
