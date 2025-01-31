@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { furnitureProducts } from '../../lib/data';
 import type { Product, ApiResponse } from '../../lib/types';
 
+// Export furnitureProducts from here as well since the [id] route is trying to import it
+export { furnitureProducts } from '../../lib/data';
+
 export async function GET(request: NextRequest) {
   try {
     if (!furnitureProducts || !Array.isArray(furnitureProducts)) {
